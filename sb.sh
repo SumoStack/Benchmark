@@ -1,11 +1,10 @@
 #!/bin/bash
-# Copyright (C) 2012 Crowd9 Pty Ltd
+# Script by SumoStack (Updated 2017)
 
 usage ()
 {
-     echo >&2 "usage: bash $0 'john@example.com' 'MyBox' 'MyProvider.com' [\\\$20/mth]"
+     echo >&2 "usage: bash $0 'youremail@address.com' 'Plan Name' 'Web Host Name' [\\\$20/mth]"
 }
-
 if [ $# -lt 3 ]
 then
   usage
@@ -21,23 +20,23 @@ COST=$4
 PRIVATE=$5
 
 echo "
-###############################################################################
-#               ServerBear (http://serverbear.com) benchmarker                #
-###############################################################################
+################################################################################
+#                               Server Benchmark                               #
+################################################################################
 
 This script will:
   * Download and install packages to run UnixBench
   * Download and run UnixBench
-  * Upload to ServerBear the UnixBench output and information about this computer
+  * Upload to SumoStack the UnixBench output and information about this computer
 
-This script has been tested on Ubuntu, Debian, and CentOs (6+).  Running it on other environments may not work correctly.
+This script has been tested on Ubuntu, Debian, and CentOS.  Running it on other environments will likely work correctly but run at your own risk.
 
 To improve consistency, we recommend that you stop any services you may be running (e.g. web server, database, etc) to get the environment as close as possible to the original configuration.
 
 WARNING: You run this script entirely at your own risk.
-ServerBear accepts no responsibility for any damage this script may cause.
+SumoStack accepts no responsibility for any damage this script may cause.
 
-Please review the code at https://github.com/Crowd9/Benchmark if you have any concerns"
+Please review the code at https://github.com/SumoStack/Benchmark if you have any concerns"
 
 echo "Checking for required dependencies"
 
@@ -85,7 +84,7 @@ fi
 if [ "$TO_INSTALL" != '' ]; then
   echo "Using $PACKAGE_MANAGER to install$TO_INSTALL"
   if [ "$UPDATE" != '' ]; then
-    echo "Doing package update"
+    echo "Doing package updates"
     $SUDO $UPDATE
   fi 
   $SUDO $PACKAGE_MANAGER install -y $TO_INSTALL $MANAGER_OPTS
@@ -98,7 +97,7 @@ IOPING_VERSION=0.6
 IOPING_DIR=ioping-$IOPING_VERSION
 FIO_VERSION=2.0.9
 FIO_DIR=fio-$FIO_VERSION
-UPLOAD_ENDPOINT='http://promozor.com/uploads.text'
+UPLOAD_ENDPOINT='https://logs-01.loggly.com/bulk/f2874161-8f2c-41a9-b05e-dde6a608a27d/tag/file_upload'
 
 # args: [name] [target dir] [filename] [url]
 function require_download() {
@@ -108,9 +107,9 @@ function require_download() {
   fi
 }
 
-require_download FIO fio-$FIO_DIR https://github.com/Crowd9/Benchmark/raw/master/fio-$FIO_VERSION.tar.gz
-require_download IOPing $IOPING_DIR https://github.com/Crowd9/Benchmark/raw/master/ioping-$IOPING_VERSION.tar.gz
-require_download UnixBench $UNIX_BENCH_DIR https://github.com/Crowd9/Benchmark/raw/master/UnixBench$UNIX_BENCH_VERSION-patched.tgz
+require_download FIO fio-$FIO_DIR https://github.com/SumoStack/Benchmark/raw/master/fio-$FIO_VERSION.tar.gz
+require_download IOPing $IOPING_DIR https://github.com/SumoStack/Benchmark/raw/master/ioping-$IOPING_VERSION.tar.gz
+require_download UnixBench $UNIX_BENCH_DIR https://github.com/SumoStack/Benchmark/raw/master/UnixBench$UNIX_BENCH_VERSION-patched.tgz
 mv -f UnixBench $UNIX_BENCH_DIR 2>/dev/null
 
 cat > $FIO_DIR/reads.ini << EOF
@@ -152,7 +151,7 @@ readwrite=randwrite
 EOF
 
 if [ -e "~/.sb-pid" ] && ps -p $PID >&- ; then
-  echo "ServerBear job is already running (PID: $PID)"
+  echo "SumoStack Benchmark is already running (PID: $PID)"
   exit 0
 fi
 
@@ -162,10 +161,10 @@ cat > run-upload.sh << EOF
 echo "
 ###############################################################################
 #                                                                             #
-#             Installation(s) complete.  Benchmarks starting...               #
+#              Installation(s) complete.  Benchmark starting...               #
 #                                                                             #
 #  Running Benchmark as a background task. This can take several hours.       #
-#  ServerBear will email you when it's done.                                  #
+#  SumoStack will email you when it's done.                                   #
 #  You can log out/Ctrl-C any time while this is happening                    #
 #  (it's running through nohup).                                              #
 #                                                                             #
@@ -256,7 +255,7 @@ RESPONSE=\`curl -s -F "upload[upload_type]=unix-bench-output" -F "upload[data]=<
 
 echo "Uploading results..."
 echo "Response: \$RESPONSE"
-echo "Completed! Your benchmark has been queued & will be delivered in a jiffy."
+echo "Completed! Your benchmark has been queued and will be delivered now."
 kill -15 \`ps -p \$\$ -o ppid=\` &> /dev/null
 rm -rf ../sb-bench
 rm -rf ~/.sb-pid
@@ -272,3 +271,5 @@ nohup ./run-upload.sh >> sb-script.log 2>&1 & &> /dev/null
 echo $! > ~/.sb-pid
 
 tail -n 25 -F sb-script.log
+
+# Copyright (C) 2012 Crowd9 Pty Ltd
