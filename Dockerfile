@@ -1,13 +1,12 @@
 #
-# Quick and dirty contained environement for runnning a ServerBear benchmark
+# Quick and dirty contained environment for running a SumoStack Benchmark
 #
 # Reference:
-# * http://www.serverbear.com
-# * https://github.com/Crowd9/Benchmark
+# * https://github.com/SumoStack/Benchmark
 #
 FROM ubuntu:14.04
 
-MAINTAINER Kyle Manna <kyle@kylemanna.com>
+MAINTAINER SumoStack <hello@sumostack.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
